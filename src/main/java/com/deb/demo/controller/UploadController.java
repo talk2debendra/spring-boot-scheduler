@@ -69,6 +69,21 @@ public class UploadController {
 	public ModelAndView init(HttpServletRequest request,HttpServletResponse response){
 		return getUploadView(request, response);
 	}
-
+@GetMapping("/start/{time}")
+	public void startScheduler(@PathVariable Long time){
+		System.out.println("Task size:"+ApplicationUtility.tasks.size());
+		ScheduledExecutorService scheduledExecutorService = Executors.newScheduledThreadPool(Runtime.getRuntime().availableProcessors());
+		ScheduledFuture<?> task = scheduledExecutorService.scheduleAtFixedRate(() -> System.out.println("some task of time :"+time), 0,time, TimeUnit.SECONDS);		
+		ApplicationUtility.tasks.add(task);
+		System.out.println("Task size after:"+ApplicationUtility.tasks.size());
+	}
+	@GetMapping("/stop")
+	public void stopScheduler(){
+		System.out.println("Task size:"+ApplicationUtility.tasks.size());
+		for(ScheduledFuture<?> task : ApplicationUtility.tasks){
+			System.out.println("Stopping task:"+task);
+			task.cancel(true);
+		}
+	}
 
 }
